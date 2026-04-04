@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Tally</Name>
+  <Repository>jaydenroberts/tally:latest</Repository>
+  <Registry>https://hub.docker.com/r/jaydenroberts/tally</Registry>
+  <Network>bridge</Network>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/jaydenroberts/tally/issues</Support>
+  <Project>https://github.com/jaydenroberts/tally</Project>
+  <Overview>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. CSV and PDF bank statement import with reconciliation. Dracula theme. Single Docker container.</Overview>
+  <Category>Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:8091]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/jaydenroberts/unraid-templates/main/tally.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/jaydenroberts/tally/main/frontend/public/android-chrome-512x512.png</Icon>
+  <ExtraParams/>
+  <DateInstalled/>
+  <Description>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. CSV and PDF bank statement import with reconciliation. Dracula theme. Single Docker container.</Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish>
+      <Port>
+        <HostPort>8091</HostPort>
+        <ContainerPort>8091</ContainerPort>
+        <Protocol>tcp</Protocol>
+      </Port>
+    </Publish>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir>/mnt/user/appdata/tally/data</HostDir>
+      <ContainerDir>/data</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/tally/financial-data</HostDir>
+      <ContainerDir>/financial-data</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+  </Data>
+  <Environment/>
+  <Config Name="Web UI Port" Target="8091" Default="8091" Mode="tcp" Description="Port Tally listens on. Access the app at http://[serverIP]:[this port]." Type="Port" Display="always" Required="true" Mask="false">8091</Config>
+  <Config Name="Data Volume" Target="/data" Default="/mnt/user/appdata/tally/data" Mode="rw" Description="SQLite database storage. Must be a persistent path on the host." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/tally/data</Config>
+  <Config Name="Financial Data Volume" Target="/financial-data" Default="/mnt/user/appdata/tally/financial-data" Mode="ro" Description="Read-only directory for bank statement files (CSV/PDF) available for import." Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/tally/financial-data</Config>
+  <Config Name="SECRET_KEY" Target="SECRET_KEY" Default="" Mode="" Description="JWT signing key. Generate with: openssl rand -hex 32" Type="Variable" Display="always" Required="true" Mask="true"></Config>
+  <Config Name="ACCESS_TOKEN_EXPIRE_DAYS" Target="ACCESS_TOKEN_EXPIRE_DAYS" Default="30" Mode="" Description="JWT token lifetime in days." Type="Variable" Display="advanced" Required="false" Mask="false">30</Config>
+  <Config Name="FIRST_RUN_OWNER_USERNAME" Target="FIRST_RUN_OWNER_USERNAME" Default="" Mode="" Description="Auto-creates the first owner account on startup. Leave blank to use the setup page instead." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="FIRST_RUN_OWNER_PASSWORD" Target="FIRST_RUN_OWNER_PASSWORD" Default="" Mode="" Description="Required if FIRST_RUN_OWNER_USERNAME is set." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
+</Container>
