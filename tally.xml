@@ -7,14 +7,14 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/jaydenroberts/tally/issues</Support>
   <Project>https://github.com/jaydenroberts/tally</Project>
-  <Overview>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. CSV and PDF bank statement import with reconciliation. Dracula theme. Single Docker container.</Overview>
+  <Overview>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. Link transactions to savings goals and debts. Record transfers between accounts. CSV and PDF bank statement import with reconciliation. AI chat interface (Anthropic, OpenAI, or Ollama). Dracula theme. Single Docker container.</Overview>
   <Category>Productivity:</Category>
   <WebUI>http://[IP]:[PORT:8091]</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/jaydenroberts/unraid-templates/main/tally.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/jaydenroberts/tally/main/frontend/public/android-chrome-512x512.png</Icon>
   <ExtraParams/>
   <DateInstalled/>
-  <Description>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. CSV and PDF bank statement import with reconciliation. Dracula theme. Single Docker container.</Description>
+  <Description>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. Link transactions to savings goals and debts. Record transfers between accounts. CSV and PDF bank statement import with reconciliation. AI chat interface (Anthropic, OpenAI, or Ollama). Dracula theme. Single Docker container.</Description>
   <Networking>
     <Mode>bridge</Mode>
     <Publish>
@@ -45,7 +45,8 @@
   <Config Name="ACCESS_TOKEN_EXPIRE_DAYS" Target="ACCESS_TOKEN_EXPIRE_DAYS" Default="30" Mode="" Description="JWT token lifetime in days." Type="Variable" Display="advanced" Required="false" Mask="false">30</Config>
   <Config Name="FIRST_RUN_OWNER_USERNAME" Target="FIRST_RUN_OWNER_USERNAME" Default="" Mode="" Description="Auto-creates the first owner account on startup. Leave blank to use the setup page instead." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="FIRST_RUN_OWNER_PASSWORD" Target="FIRST_RUN_OWNER_PASSWORD" Default="" Mode="" Description="Required if FIRST_RUN_OWNER_USERNAME is set." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
-  <Config Name="AI_PROVIDER" Target="AI_PROVIDER" Default="anthropic" Mode="" Description="AI provider for the chat feature: anthropic, openai, or ollama (any OpenAI-compatible endpoint). Leave unset to disable the chat page." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="RECOVERY_TOKEN" Target="RECOVERY_TOKEN" Default="" Mode="" Description="Emergency owner password reset token. Set to any strong random value (openssl rand -hex 32), call POST /api/auth/recover, then remove this variable and restart. Leave blank when not in use." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
+  <Config Name="AI_PROVIDER" Target="AI_PROVIDER" Default="" Mode="" Description="AI provider for the chat feature: anthropic, openai, or ollama (any OpenAI-compatible endpoint). Leave unset to disable the chat page." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="AI_API_KEY" Target="AI_API_KEY" Default="" Mode="" Description="API key for the selected AI provider. Not required for local Ollama." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
   <Config Name="AI_MODEL" Target="AI_MODEL" Default="" Mode="" Description="Model name to use (e.g. claude-3-5-sonnet-20241022, gpt-4o, llama3). Defaults to provider default if left blank." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="AI_BASE_URL" Target="AI_BASE_URL" Default="" Mode="" Description="Base URL for OpenAI-compatible endpoints (e.g. http://ollama:11434/v1). Required for Ollama; leave blank for Anthropic or OpenAI." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
