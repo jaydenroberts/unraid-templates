@@ -7,19 +7,19 @@
   <Privileged>false</Privileged>
   <Support>https://github.com/jaydenroberts/tally/issues</Support>
   <Project>https://github.com/jaydenroberts/tally</Project>
-  <Overview>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. Link transactions to savings goals and debts. Record transfers between accounts. CSV and PDF bank statement import with reconciliation. AI chat interface (Anthropic, OpenAI, or Ollama). Dracula theme. Single Docker container. Runs as a non-root user; the appdata data path must remain writable by the container (default on Unraid). If you reach Tally through a reverse proxy, tunnel, or custom domain, set ALLOWED_ORIGINS.</Overview>
+  <Overview>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. Link transactions to savings goals and debts. Record transfers between accounts. CSV and PDF bank statement import with reconciliation. AI chat interface (Anthropic, OpenAI, or Ollama). One-click backup, full JSON export, and CSV export from Settings, plus an automatic verified snapshot before any upgrade that changes the database. Dracula theme. Single Docker container. Runs as a non-root user; the appdata data path must remain writable by the container (default on Unraid). If you reach Tally through a reverse proxy, tunnel, or custom domain, set ALLOWED_ORIGINS.</Overview>
   <Category>Productivity:</Category>
   <WebUI>http://[IP]:[PORT:8091]</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/jaydenroberts/unraid-templates/main/tally.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/jaydenroberts/tally/main/frontend/public/android-chrome-512x512.png</Icon>
   <ExtraParams/>
   <DateInstalled/>
-  <Description>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. Link transactions to savings goals and debts. Record transfers between accounts. CSV and PDF bank statement import with reconciliation. AI chat interface (Anthropic, OpenAI, or Ollama). Dracula theme. Single Docker container.</Description>
+  <Description>Self-hosted personal finance for households. Track accounts, transactions, budgets, savings goals, and debt. Link transactions to savings goals and debts. Record transfers between accounts. CSV and PDF bank statement import with reconciliation. AI chat interface (Anthropic, OpenAI, or Ollama). Backup and export tools, with an automatic verified snapshot before upgrades. Dracula theme. Single Docker container.</Description>
   <Networking>
     <Mode>bridge</Mode>
     <Publish>
       <Port>
-        <HostPort>8091</HostPort>
+        <HostPort>8092</HostPort>
         <ContainerPort>8091</ContainerPort>
         <Protocol>tcp</Protocol>
       </Port>
@@ -31,16 +31,10 @@
       <ContainerDir>/data</ContainerDir>
       <Mode>rw</Mode>
     </Volume>
-    <Volume>
-      <HostDir>/mnt/user/appdata/tally/financial-data</HostDir>
-      <ContainerDir>/financial-data</ContainerDir>
-      <Mode>ro</Mode>
-    </Volume>
   </Data>
   <Environment/>
-  <Config Name="Web UI Port" Target="8091" Default="8091" Mode="tcp" Description="Port Tally listens on. Access the app at http://[serverIP]:[this port]." Type="Port" Display="always" Required="true" Mask="false">8091</Config>
+  <Config Name="Web UI Port" Target="8091" Default="8092" Mode="tcp" Description="Host port Tally is reached on. Access the app at http://[serverIP]:[this port]. Tally listens on 8091 inside the container; only change the host side unless you know why." Type="Port" Display="always" Required="true" Mask="false">8092</Config>
   <Config Name="Data Volume" Target="/data" Default="/mnt/user/appdata/tally/data" Mode="rw" Description="SQLite database storage. Must be a persistent path on the host. The container runs as a non-root user, so this path must be writable by the container (the default /mnt/user/appdata location on Unraid already is). Tally fails to create its database on first start if it is not writable." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/tally/data</Config>
-  <Config Name="Financial Data Volume" Target="/financial-data" Default="/mnt/user/appdata/tally/financial-data" Mode="ro" Description="Read-only directory for bank statement files (CSV/PDF) available for import." Type="Path" Display="always" Required="false" Mask="false">/mnt/user/appdata/tally/financial-data</Config>
   <Config Name="SECRET_KEY" Target="SECRET_KEY" Default="" Mode="" Description="JWT signing key. Generate with: openssl rand -hex 32" Type="Variable" Display="always" Required="true" Mask="true"></Config>
   <Config Name="ACCESS_TOKEN_EXPIRE_DAYS" Target="ACCESS_TOKEN_EXPIRE_DAYS" Default="30" Mode="" Description="JWT token lifetime in days." Type="Variable" Display="advanced" Required="false" Mask="false">30</Config>
   <Config Name="ALLOWED_ORIGINS" Target="ALLOWED_ORIGINS" Default="" Mode="" Description="Comma-separated allow-list of browser origins permitted to call the app (CORS). Leave blank to allow only the local origin. If you reach Tally through a reverse proxy, tunnel, or custom domain/hostname, you MUST list that origin here or the browser app will break. Example: https://tally.example.com,https://tally.example.duckdns.org" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
@@ -48,8 +42,13 @@
   <Config Name="FIRST_RUN_OWNER_USERNAME" Target="FIRST_RUN_OWNER_USERNAME" Default="" Mode="" Description="Auto-creates the first owner account on startup. Leave blank to use the setup page instead." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="FIRST_RUN_OWNER_PASSWORD" Target="FIRST_RUN_OWNER_PASSWORD" Default="" Mode="" Description="Required if FIRST_RUN_OWNER_USERNAME is set." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
   <Config Name="RECOVERY_TOKEN" Target="RECOVERY_TOKEN" Default="" Mode="" Description="Emergency owner password reset token. Set to any strong random value (openssl rand -hex 32), call POST /api/auth/recover, then remove this variable and restart. Leave blank when not in use." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
-  <Config Name="AI_PROVIDER" Target="AI_PROVIDER" Default="" Mode="" Description="AI provider for the chat feature: anthropic, openai, or ollama (any OpenAI-compatible endpoint). Leave unset to disable the chat page." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="BACKUP_DIR" Target="BACKUP_DIR" Default="" Mode="" Description="Directory where automatic pre-upgrade database snapshots are written. Leave blank to use a backups folder beside the database — /data/backups with the shipped Data Volume path." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="BACKUP_KEEP" Target="BACKUP_KEEP" Default="5" Mode="" Description="How many automatic pre-upgrade snapshots to keep. Older snapshots are deleted after a new one is written. Minimum 1." Type="Variable" Display="advanced" Required="false" Mask="false">5</Config>
+  <Config Name="PRE_MIGRATION_BACKUP" Target="PRE_MIGRATION_BACKUP" Default="on" Mode="" Description="Set to off to skip the automatic verified snapshot Tally takes before an upgrade changes the database. Leave on unless you run your own backup process and want faster upgrades." Type="Variable" Display="advanced" Required="false" Mask="false">on</Config>
+  <Config Name="AI_PROVIDER" Target="AI_PROVIDER" Default="" Mode="" Description="AI provider for the chat feature: anthropic, openai, or ollama (any OpenAI-compatible endpoint). AI is entirely optional — the rest of Tally works fully without it. Leaving this unset does NOT hide the AI Coach page: it stays visible in the sidebar and shows an error if opened without a configured provider and API key." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="AI_API_KEY" Target="AI_API_KEY" Default="" Mode="" Description="API key for the selected AI provider. Not required for local Ollama." Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
   <Config Name="AI_MODEL" Target="AI_MODEL" Default="" Mode="" Description="Model name to use (e.g. claude-sonnet-4-6, gpt-4o, llama3). Defaults to provider default if left blank." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
   <Config Name="AI_BASE_URL" Target="AI_BASE_URL" Default="" Mode="" Description="Base URL for OpenAI-compatible endpoints (e.g. http://ollama:11434/v1). Required for Ollama; leave blank for Anthropic or OpenAI." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="CHAT_HISTORY_TURNS" Target="CHAT_HISTORY_TURNS" Default="" Mode="" Description="How many prior chat turns are replayed as context in the AI Coach. Defaults to 30 for hosted providers (Anthropic/OpenAI) or 10 for Ollama. Does not limit what is stored — the full conversation is always kept in the database." Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+  <Config Name="TALLY_LOCAL_PROVIDER_WRITE_TOOLS" Target="TALLY_LOCAL_PROVIDER_WRITE_TOOLS" Default="deny" Mode="" Description="Only applies when AI_PROVIDER=ollama. Set to allow to let a local model use write tools; the default (deny) strips them." Type="Variable" Display="advanced" Required="false" Mask="false">deny</Config>
 </Container>
